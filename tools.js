@@ -7,6 +7,7 @@
 
 // Works similar to jQuery's $.extend() only it doesn't mutate any of the objects
 // Always returns a new object with the properties being writable and enumerable
+// Usage: var combinedOptions = tools.merge(defaultObject, myOptions);
 exports.merge = function () {
 	var newObj = {};
 	for (var arg = 0; arg < arguments.length; arg +=1) {

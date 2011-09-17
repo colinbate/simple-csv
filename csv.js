@@ -14,7 +14,7 @@ var tools = require('tools');
 var csvPattern = /(,|^)(?:"([^"]*(?:""[^"]*)*)"|([^\",]*))/g;
 
 var buildRecord = function (str, asArray, headers) {
-	var record = (asArray && []) || {};
+    var record = (asArray && []) || {};
 	var index = 0;
 	var matches;
 	if (str.charAt(0) === ',') {
@@ -45,7 +45,14 @@ var buildRecord = function (str, asArray, headers) {
 	return record;
 };
 
-exports.parse = function (filename, options, callback) {
+/**
+ * Parses a CSV file row by row.
+ * @param {String} filename The path to the .csv file to be parsed
+ * @param {Object} options A set of options that you can use to override default behaviour
+ * @param {Function} callback The function that gets called for each row in the file
+ * @param {Function} endCallback The function that gets invoked after the last row is proceeded
+ */
+exports.parse = function (filename, options, callback, endCallback) {
 	var defaults = {
 		asArray : false,
 		headers : [],
@@ -73,7 +80,7 @@ exports.parse = function (filename, options, callback) {
 			if (i == parts.length-1) {
 				return;
 			}
-			if (opts.hasHeaders && first && i == 0) {
+			if (opts.hasHeaders && first && i === 0) {
 				if (opts.headers.length === 0) {
 					opts.headers = buildRecord(d, true);
 					first = false;
@@ -85,6 +92,12 @@ exports.parse = function (filename, options, callback) {
 			}
 		});
 		buffer = parts[parts.length-1];
+	});
+	
+	stream.addListener('end', function() {
+		if (typeof (endCallback) === 'function') {
+			endCallback();
+		}
 	});
 	
 };
